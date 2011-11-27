@@ -1,6 +1,13 @@
 class ProductsController < ApplicationController
   def index
     @products = Product.order("name").limit(10)
+    @products = @products.offset((params[:page].to_i - 1) * 10) if params[:page].present?
+    respond_to do |format|
+      format.html
+      format.json do
+        render json: @products.map{ |p| view_context.products_for_mustache(p) }
+      end
+    end
   end
 
   def show
